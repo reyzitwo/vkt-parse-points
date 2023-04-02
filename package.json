@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "npm i && node index.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "node-fetch": "^3.3.1"
+  }
+}
