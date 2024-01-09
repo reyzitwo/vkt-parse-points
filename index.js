@@ -16,17 +16,27 @@ async function fetch2(last_id) {
 }
 async function getPoints(last_id) {
   const data = await fetch2(last_id)
+  const end = 1630011600 // timestamp, если нужно за весь период - указываем 0
 
   try {
     let items = data.response.items
-    if (items.length > 0) {
-      items.map((el) => {
-        if (el.delta > 0 && el.note.split("Отмена заказа").length === 1) points.push(el.delta)
-      })
 
-      return setTimeout(() => {
-        getPoints(items[items.length - 1].transaction_id)
-      }, getRandomInt(1400, 2100))
+    if (items.length > 0) {
+      for (let i = 0; i < items.length; i++) {
+        let { delta, note, ts } = items[i]
+        if (ts < end) {
+          items = []
+          break
+        }
+
+        if (delta > 0 && note.split("Отмена заказа").length === 1) points.push(delta)
+      }
+
+      if (items.length > 0) {
+        return setTimeout(() => {
+          getPoints(items[items.length - 1].transaction_id)
+        }, getRandomInt(1400, 2100))
+      }
     }
 
     console.log(`Всего было заработано ${points.reduce((a, b) => a + b, 0).toLocaleString("ru-RU")} баллов`)
